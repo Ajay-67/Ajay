@@ -1,0 +1,46 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: backend-ns
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ajay-dep
+  namespace: backend-ns  # Added namespace
+  labels:
+    app: ajay-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: ajay-app
+  template:
+    metadata:
+      labels:
+        app: ajay-app
+    spec:
+      containers:
+        - name: ajay-app
+          image: ajaay076/ajay-app:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 9090
+              protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ajay-service
+  namespace: backend-ns  # Added namespace
+  labels:
+    app: ajay-service
+spec:
+  selector:
+    app: ajay-app        # Fixed to match the Deployment labels
+  type: LoadBalancer
+  ports:
+    - port: 9090
+      targetPort: 9090
+      nodePort: 30000
+      protocol: TCP
